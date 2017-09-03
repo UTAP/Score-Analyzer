@@ -9,6 +9,7 @@ from collections import defaultdict
 
 
 sid_mask = ["8101", "95", "000"]
+datasheets_addr_prefix = "data/"
 
 
 def create_data_list():
@@ -52,7 +53,7 @@ if __name__ == '__main__':
     data = []
 
     for datasheet_attr in data_list:
-        with open("data/" + datasheet_attr["file_name"]) as f:
+        with open(datasheets_addr_prefix + datasheet_attr["file_name"]) as f:
             students = {}
             for level in levels:
                 students[level] = []

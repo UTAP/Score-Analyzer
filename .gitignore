@@ -1,5 +1,6 @@
 .env
 .cache/
+data
 __pycache__
 .DS_Store
 *.sublime-workspace

@@ -8,7 +8,7 @@ from sys import stderr
 from collections import defaultdict
 
 
-sid_mask = ["8101", "95", "000"]
+sid_mask = ["81", "01", "95", "000"]
 datasheets_addr_prefix = "data/"
 
 
@@ -54,29 +54,36 @@ if __name__ == '__main__':
 
     for datasheet_attr in data_list:
         with open(datasheets_addr_prefix + datasheet_attr["file_name"]) as f:
+            print("%s" % (datasheet_attr["file_name"]), file = stderr)
+            # if "AP S96 Assign1 - mehdithreem.csv" != datasheet_attr["file_name"]:
+                # continue
             students = {}
             for level in levels:
                 students[level] = []
             data_reader = csv.DictReader(f, dialect = "excel")
             row_number = 0
             for row in data_reader:
-                if row_number < datasheet_attr["skip_rows"]:
-                    continue
                 row_number += 1
+                if row_number <= datasheet_attr["skip_rows"]:
+                    continue
                 sid = row[datasheet_attr["sid_name"]]
                 try:
                     sid = normalize_sid(sid)
                 except ValueError as ex:
-                    print("%s : %d\n>>>\t %r" % (datasheet_attr["file_name"], row_number + 1, ", ".join(row.values())), file = stderr)
+                    print("\tERR @%d: \t%r" % (row_number + 1, ", ".join(row.values())), file = stderr)
                     continue
                 late = row[datasheet_attr["late_name"]]
                 if not late:
                     late = "0"
-                late = float(late.replace("%", ""))
+                try:
+                    late = float(late.replace("%", ""))
+                except ValueError as ex:
+                    print("\tERR @%d: \t%r" % (row_number + 1, ", ".join(row.values())), file = stderr)
+                    continue
                 for level in levels:
                     if late > datasheet_attr[level]:
                         students[level].append(sid)
                         break
             data[datasheet_attr["file_name"]] = students
-    print(json.dumps(data, indent = 4))
+    # print(json.dumps(data, indent = 4))
 

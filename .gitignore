@@ -3,5 +3,6 @@
 data
 __pycache__
 .DS_Store
+data_list.json
 *.sublime-workspace
 *.orig

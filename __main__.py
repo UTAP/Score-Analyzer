@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     levels = ["level2", "level1"]
 
-    data = []
+    data = {}
 
     for datasheet_attr in data_list:
         with open(datasheets_addr_prefix + datasheet_attr["file_name"]) as f:
@@ -72,11 +72,11 @@ if __name__ == '__main__':
                 late = row[datasheet_attr["late_name"]]
                 if not late:
                     late = "0"
-                late = float(late)
+                late = float(late.replace("%", ""))
                 for level in levels:
                     if late > datasheet_attr[level]:
                         students[level].append(sid)
                         break
-            data.append(students)
-    print(data)
+            data[datasheet_attr["file_name"]] = students
+    print(json.dumps(data, indent = 4))
 

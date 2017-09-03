@@ -10,6 +10,7 @@ from collections import defaultdict
 
 sid_mask = ["81", "01", "95", "000"]
 datasheets_addr_prefix = "data/"
+levels = ["level2", "level1"]
 
 
 def create_data_list():
@@ -41,14 +42,9 @@ def normalize_sid(arg):
     raise ValueError("invalid length SID")
 
 
-if __name__ == '__main__':
-    # create_data_list()
-
+def extract_data():
     with open("data_list.json") as f:
         data_list = json.loads(f.read().replace("    ", ""))
-    # print(data_list, file = stderr)
-
-    levels = ["level2", "level1"]
 
     data = {}
 
@@ -85,5 +81,11 @@ if __name__ == '__main__':
                         students[level].append(sid)
                         break
             data[datasheet_attr["file_name"]] = students
-    # print(json.dumps(data, indent = 4))
+
+    return data
+
+if __name__ == '__main__':
+    # create_data_list()
+
+    print(json.dumps(extract_data(), indent = 4))
 

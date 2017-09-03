@@ -58,12 +58,16 @@ if __name__ == '__main__':
             for level in levels:
                 students[level] = []
             data_reader = csv.DictReader(f, dialect = "excel")
+            row_number = 0
             for row in data_reader:
+                if row_number < datasheet_attr["skip_rows"]:
+                    continue
+                row_number += 1
                 sid = row[datasheet_attr["sid_name"]]
                 try:
                     sid = normalize_sid(sid)
                 except ValueError as ex:
-                    print(datasheet_attr["file_name"] + ":\n\t" + ", ".join(row.values()), file = stderr)
+                    print("%s : %d\n>>>\t %r" % (datasheet_attr["file_name"], row_number + 1, ", ".join(row.values())), file = stderr)
                     continue
                 late = row[datasheet_attr["late_name"]]
                 if not late:

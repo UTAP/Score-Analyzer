@@ -16,11 +16,13 @@ levels = ["level2", "level1"]
 def create_data_list():
     data_list = [
         {
+            "project_name": "sth",
             "file_name": "addr",
-            "late_name": "فیلد",
+            "late_field": "فیلد",
+            "sid_field": "ش.د",
+            "original_score_field": "sth",
             "level1": 1.0,
             "level2": 1.1,
-            "sid_name": "ش.د",
             "skip_rows": 0
         }
     ]
@@ -55,20 +57,20 @@ def extract_data():
                 # continue
             students = {}
             for level in levels:
-                students[level] = []
+                students[level] = {}
             data_reader = csv.DictReader(f, dialect = "excel")
             row_number = 0
             for row in data_reader:
                 row_number += 1
                 if row_number <= datasheet_attr["skip_rows"]:
                     continue
-                sid = row[datasheet_attr["sid_name"]]
+                sid = row[datasheet_attr["sid_field"]]
                 try:
                     sid = normalize_sid(sid)
                 except ValueError as ex:
                     print("\tERR @%d: \t%r" % (row_number + 1, ", ".join(row.values())), file = stderr)
                     continue
-                late = row[datasheet_attr["late_name"]]
+                late = row[datasheet_attr["late_field"]]
                 if not late:
                     late = "0"
                 try:
@@ -76,11 +78,17 @@ def extract_data():
                 except ValueError as ex:
                     print("\tERR @%d: \t%r" % (row_number + 1, ", ".join(row.values())), file = stderr)
                     continue
+                score = row[datasheet_attr["original_score_field"]]
+                try:
+                    score = float(score.replace("%", ""))
+                except ValueError as ex:
+                    print("\tERR @%d: \t%r" % (row_number + 1, ", ".join(row.values())), file = stderr)
+                    continue
                 for level in levels:
                     if late > datasheet_attr[level]:
-                        students[level].append(sid)
+                        students[level][sid] = score
                         break
-            data[datasheet_attr["file_name"]] = students
+            data[datasheet_attr["project_name"]] = students
 
     return data
 
@@ -91,10 +99,10 @@ def students_by_project_to_students_by_sid(students_by_project):
         for level in students_by_project[project]:
             for sid in students_by_project[project][level]:
                 if not students_by_sid[sid]:
-                    students_by_sid[sid] = dict((level, []) for level in levels)
-                if not students_by_sid[sid][level]:
-                    students_by_sid[sid][level] = []
-                students_by_sid[sid][level].append(project)
+                    students_by_sid[sid] = dict((level, {}) for level in levels)
+                # if not students_by_sid[sid][level]:
+                    # students_by_sid[sid][level] = []
+                students_by_sid[sid][level][project] = students_by_project[project][level][sid]
     return students_by_sid
 
 
@@ -104,6 +112,6 @@ if __name__ == '__main__':
     students_by_project = extract_data()
     students_by_sid = students_by_project_to_students_by_sid(students_by_project)
 
-    print(json.dumps(students_by_project, indent = 4))
-    print(json.dumps(students_by_sid, indent = 4))
+    # print(json.dumps(students_by_project, indent = 4))
+    # print(json.dumps(students_by_sid, indent = 4))
 

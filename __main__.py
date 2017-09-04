@@ -163,7 +163,7 @@ def visualize_number_of_students_by_project(students_by_project, file_addr):
 
     fig.savefig(exports_addr_prefix + file_addr, bbox_inches='tight', dpi = 300)
 
-def visualize_number_of_projects_by_student(students_by_sid, name_by_sid, file_addr):
+def visualize_number_of_projects_by_student(students_by_sid, name_by_sid, file_addr, use_full_name = True):
     number_of_projects = dict((sid, sum([len(students_by_sid[sid][level]) for level in levels])) for sid in students_by_sid)
     number_of_projects = dict((sid, number_of_projects[sid]) for sid in [j for (i, j) in sorted([(value, key) for (key, value) in number_of_projects.items()], reverse = True)])
 
@@ -171,8 +171,7 @@ def visualize_number_of_projects_by_student(students_by_sid, name_by_sid, file_a
     ax = fig.add_subplot(1, 1, 1)
     ax.axis([0, max(list(number_of_projects.values())) + 0.5, -1, len(number_of_projects)])
     ax.set_yticks(range(len(number_of_projects)))
-    # ax.set_yticklabels([name_by_sid[sid] for sid in number_of_projects])
-    ax.set_yticklabels([sid for sid in number_of_projects], fontsize = 5)
+    ax.set_yticklabels([[sid, name_by_sid[sid]][use_full_name] for sid in number_of_projects], fontsize = 5)
     ax.set_title("Number of Projects by Student")
     ax.set_xlabel("projects")
     ax.barh(range(len(number_of_projects)), number_of_projects.values(), color = get_random_color())
@@ -210,7 +209,7 @@ if __name__ == '__main__':
 
     visualize_scores_by_project(students_by_project, "scores_by_project.png")
     visualize_number_of_students_by_project(students_by_project, "number_of_students_by_project.png")
-    visualize_number_of_projects_by_student(students_by_sid, name_by_sid, "number_of_projects_by_student.png")
+    visualize_number_of_projects_by_student(students_by_sid, name_by_sid, "number_of_projects_by_student.png", False)
     export_by_project(students_by_project, "by_project.csv")
     export_by_sid(students_by_sid, name_by_sid, "by_sid.csv")
 

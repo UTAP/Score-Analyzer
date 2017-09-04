@@ -126,7 +126,7 @@ def extract_name_by_sid(file_addr):
 
     return name_by_sid
 
-def visualize_scores_by_project(students_by_project):
+def visualize_scores_by_project(students_by_project, file_addr):
     avg_score_by_project = defaultdict(int)
     for project in students_by_project:
         score_sum = 0
@@ -145,7 +145,9 @@ def visualize_scores_by_project(students_by_project):
     for i in range(len(avg_score_by_project)):
         ax.text(i - 0.3, list(avg_score_by_project.values())[i] + 2, "%.3f" % list(avg_score_by_project.values())[i])
 
-def visualize_number_of_students_by_project(students_by_project):
+    fig.savefig(exports_addr_prefix + file_addr, bbox_inches='tight')
+
+def visualize_number_of_students_by_project(students_by_project, file_addr):
     number_of_students = dict((project, sum([len(students_by_project[project][level]) for level in levels])) for project in students_by_project)
 
     fig = plt.figure()
@@ -159,7 +161,9 @@ def visualize_number_of_students_by_project(students_by_project):
     for i in range(len(number_of_students)):
         ax.text(i - 0.1, list(number_of_students.values())[i] + 0.5, list(number_of_students.values())[i])
 
-def visualize_number_of_projects_by_student(students_by_sid, name_by_sid):
+    fig.savefig(exports_addr_prefix + file_addr, bbox_inches='tight')
+
+def visualize_number_of_projects_by_student(students_by_sid, name_by_sid, file_addr):
     number_of_projects = dict((sid, sum([len(students_by_sid[sid][level]) for level in levels])) for sid in students_by_sid)
     number_of_projects = dict((sid, number_of_projects[sid]) for sid in [j for (i, j) in sorted([(value, key) for (key, value) in number_of_projects.items()], reverse = True)])
 
@@ -174,6 +178,8 @@ def visualize_number_of_projects_by_student(students_by_sid, name_by_sid):
     ax.barh(range(len(number_of_projects)), number_of_projects.values(), color = get_random_color())
     for i in range(len(number_of_projects)):
         ax.text(list(number_of_projects.values())[i] + 0.05, i, list(number_of_projects.values())[i], fontsize = 5)
+
+    fig.savefig(exports_addr_prefix + file_addr, bbox_inches='tight')
 
 def export_by_project(students_by_project, file_addr):
     with open(exports_addr_prefix + file_addr, 'w') as f:
@@ -202,10 +208,10 @@ if __name__ == '__main__':
     students_by_sid = students_by_project_to_students_by_sid(students_by_project)
     name_by_sid = extract_name_by_sid("list.json")
 
-    visualize_scores_by_project(students_by_project)
-    visualize_number_of_students_by_project(students_by_project)
-    visualize_number_of_projects_by_student(students_by_sid, name_by_sid)
+    visualize_scores_by_project(students_by_project, "scores_by_project.png")
+    visualize_number_of_students_by_project(students_by_project, "number_of_students_by_project.png")
+    visualize_number_of_projects_by_student(students_by_sid, name_by_sid, "number_of_projects_by_student.png")
     export_by_project(students_by_project, "by_project.csv")
     export_by_sid(students_by_sid, name_by_sid, "by_sid.csv")
 
-    plt.show()
+    # plt.show()

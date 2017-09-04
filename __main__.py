@@ -145,7 +145,7 @@ def visualize_scores_by_project(students_by_project, file_addr):
     for i in range(len(avg_score_by_project)):
         ax.text(i - 0.3, list(avg_score_by_project.values())[i] + 2, "%.3f" % list(avg_score_by_project.values())[i])
 
-    fig.savefig(exports_addr_prefix + file_addr, bbox_inches='tight')
+    fig.savefig(exports_addr_prefix + file_addr, bbox_inches='tight', dpi = 300)
 
 def visualize_number_of_students_by_project(students_by_project, file_addr):
     number_of_students = dict((project, sum([len(students_by_project[project][level]) for level in levels])) for project in students_by_project)
@@ -161,7 +161,7 @@ def visualize_number_of_students_by_project(students_by_project, file_addr):
     for i in range(len(number_of_students)):
         ax.text(i - 0.1, list(number_of_students.values())[i] + 0.5, list(number_of_students.values())[i])
 
-    fig.savefig(exports_addr_prefix + file_addr, bbox_inches='tight')
+    fig.savefig(exports_addr_prefix + file_addr, bbox_inches='tight', dpi = 300)
 
 def visualize_number_of_projects_by_student(students_by_sid, name_by_sid, file_addr):
     number_of_projects = dict((sid, sum([len(students_by_sid[sid][level]) for level in levels])) for sid in students_by_sid)
@@ -179,7 +179,7 @@ def visualize_number_of_projects_by_student(students_by_sid, name_by_sid, file_a
     for i in range(len(number_of_projects)):
         ax.text(list(number_of_projects.values())[i] + 0.05, i, list(number_of_projects.values())[i], fontsize = 5)
 
-    fig.savefig(exports_addr_prefix + file_addr, bbox_inches='tight')
+    fig.savefig(exports_addr_prefix + file_addr, bbox_inches='tight', orientation='portrait', dpi=300)
 
 def export_by_project(students_by_project, file_addr):
     with open(exports_addr_prefix + file_addr, 'w') as f:

@@ -10,11 +10,12 @@ from numpy import random
 
 sid_mask = ["81", "01", "95", "000"]
 datasheets_addr_prefix = "data/"
+exports_addr_prefix = "export/"
 levels = ["level2", "level1"]
 
 def get_random_color():
     color_array = ["Maroon", "Olive", "Green", "Teal", "Navy", "Blue", "Purple", "Orange", "Purple", "DarkBlue", "Brown"]
-    return "#" + color_array[int(random.randint(len(color_array)))]
+    return color_array[int(random.randint(len(color_array)))]
 
 def normalize_sid(arg):
     sid_prefix_mask = "".join(sid_mask)
@@ -158,6 +159,44 @@ def visualize_number_of_students_by_project(students_by_project):
     for i in range(len(number_of_students)):
         ax.text(i - 0.1, list(number_of_students.values())[i] + 0.5, list(number_of_students.values())[i])
 
+def visualize_number_of_projects_by_student(students_by_sid, name_by_sid):
+    number_of_projects = dict((sid, sum([len(students_by_sid[sid][level]) for level in levels])) for sid in students_by_sid)
+    number_of_projects = dict((sid, number_of_projects[sid]) for sid in [j for (i, j) in sorted([(value, key) for (key, value) in number_of_projects.items()], reverse = True)])
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.axis([0, max(list(number_of_projects.values())) + 0.5, -1, len(number_of_projects)])
+    ax.set_yticks(range(len(number_of_projects)))
+    # ax.set_yticklabels([name_by_sid[sid] for sid in number_of_projects])
+    ax.set_yticklabels([sid for sid in number_of_projects], fontsize = 5)
+    ax.set_title("Number of Projects by Student")
+    ax.set_xlabel("projects")
+    ax.barh(range(len(number_of_projects)), number_of_projects.values(), color = get_random_color())
+    for i in range(len(number_of_projects)):
+        ax.text(list(number_of_projects.values())[i] + 0.05, i, list(number_of_projects.values())[i], fontsize = 5)
+
+def export_by_project(students_by_project, file_addr):
+    with open(exports_addr_prefix + file_addr, 'w') as f:
+        data_writer = csv.DictWriter(f, ["project_name"] + levels + ["sum"] , dialect = "excel")
+        data_writer.writeheader()
+        for project in students_by_project:
+            row = {"project_name": project}
+            for level in levels:
+                row[level] = len(students_by_project[project][level])
+            row["sum"] = sum(len(students_by_project[project][level]) for level in levels)
+            data_writer.writerow(row)
+
+def export_by_sid(students_by_sid, name_by_sid, file_addr):
+    with open(exports_addr_prefix + file_addr, 'w') as f:
+        data_writer = csv.DictWriter(f, ["sid", "name"] + levels + ["sum"] , dialect = "excel")
+        data_writer.writeheader()
+        for sid in students_by_sid:
+            row = {"sid": sid, "name": name_by_sid[sid]}
+            for level in levels:
+                row[level] = len(students_by_sid[sid][level])
+            row["sum"] = sum(len(students_by_sid[sid][level]) for level in levels)
+            data_writer.writerow(row)
+
 if __name__ == '__main__':
     students_by_project = extract_data("data_list.json")
     students_by_sid = students_by_project_to_students_by_sid(students_by_project)
@@ -165,5 +204,8 @@ if __name__ == '__main__':
 
     visualize_scores_by_project(students_by_project)
     visualize_number_of_students_by_project(students_by_project)
+    visualize_number_of_projects_by_student(students_by_sid, name_by_sid)
+    export_by_project(students_by_project, "by_project.csv")
+    export_by_sid(students_by_sid, name_by_sid, "by_sid.csv")
 
     plt.show()

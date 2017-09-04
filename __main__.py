@@ -5,6 +5,7 @@ import csv
 import json
 from sys import stderr
 from collections import defaultdict
+from matplotlib import pyplot as plt
 
 sid_mask = ["81", "01", "95", "000"]
 datasheets_addr_prefix = "data/"
@@ -119,11 +120,30 @@ def extract_name_by_sid(file_addr):
 
     return name_by_sid
 
+def visualize_scores_by_project(students_by_project):
+    avg_score_by_project = defaultdict(int)
+    for project in students_by_project:
+        score_sum = 0
+        for level in levels:
+            score_sum += sum(students_by_project[project][level].values())
+        avg_score_by_project[project] = score_sum / sum([len(students_by_project[project][level]) for level in levels])
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.axis([-1, len(avg_score_by_project), 0, 110])
+    ax.set_xticks(range(len(avg_score_by_project)))
+    ax.set_xticklabels(list(avg_score_by_project.keys()))
+    ax.set_ylabel("original score")
+    ax.set_title("Scores by Project")
+    ax.bar(range(len(avg_score_by_project)), avg_score_by_project.values())
+    for i in range(len(avg_score_by_project)):
+        ax.text(i - 0.3, list(avg_score_by_project.values())[i] + 2, "%.3f" % list(avg_score_by_project.values())[i])
+
 if __name__ == '__main__':
     students_by_project = extract_data("data_list.json")
     students_by_sid = students_by_project_to_students_by_sid(students_by_project)
     name_by_sid = extract_name_by_sid("list.json")
 
-    # print(json.dumps(students_by_project, indent = 4))
-    # print(json.dumps(students_by_sid, indent = 4))
-    # print(name_by_sid)
+    visualize_scores_by_project(students_by_project)
+
+    plt.show()

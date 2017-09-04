@@ -84,8 +84,26 @@ def extract_data():
 
     return data
 
+
+def students_by_project_to_students_by_sid(students_by_project):
+    students_by_sid = defaultdict(dict)
+    for project in students_by_project:
+        for level in students_by_project[project]:
+            for sid in students_by_project[project][level]:
+                if not students_by_sid[sid]:
+                    students_by_sid[sid] = dict((level, []) for level in levels)
+                if not students_by_sid[sid][level]:
+                    students_by_sid[sid][level] = []
+                students_by_sid[sid][level].append(project)
+    return students_by_sid
+
+
 if __name__ == '__main__':
     # create_data_list()
 
-    print(json.dumps(extract_data(), indent = 4))
+    students_by_project = extract_data()
+    students_by_sid = students_by_project_to_students_by_sid(students_by_project)
+
+    print(json.dumps(students_by_project, indent = 4))
+    print(json.dumps(students_by_sid, indent = 4))
 

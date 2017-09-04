@@ -10,24 +10,6 @@ sid_mask = ["81", "01", "95", "000"]
 datasheets_addr_prefix = "data/"
 levels = ["level2", "level1"]
 
-def create_data_list():
-    data_list = [
-        {
-            "project_name": "sth",
-            "file_name": "addr",
-            "late_field": "فیلد",
-            "sid_field": "ش.د",
-            "original_score_field": "sth",
-            "level1": 1.0,
-            "level2": 1.1,
-            "skip_rows": 0
-        }
-    ]
-
-    print(json.dumps(data_list, indent = 4))
-
-    exit()
-
 def normalize_sid(arg):
     sid_prefix_mask = "".join(sid_mask)
     sid_lens = [len(i) for i in reversed(sid_mask)]
@@ -40,6 +22,20 @@ def normalize_sid(arg):
     raise ValueError("invalid length SID")
 
 def extract_data(file_addr):
+    """ json format:
+    [
+        {
+            "project_name": "",
+            "file_name": "",
+            "late_field": "",
+            "sid_field": "",
+            "original_score_field": "",
+            "level1": 0,
+            "level2": 0,
+            "skip_rows": 0
+        }
+    ]
+    """
     with open(file_addr) as f:
         data_list = json.loads(f.read().replace("    ", ""))
 
@@ -99,6 +95,13 @@ def students_by_project_to_students_by_sid(students_by_project):
     return students_by_sid
 
 def extract_name_by_sid(file_addr):
+    """json format:
+    {
+        "file_name": "",
+        "name_field": "",
+        "sid_field": ""
+    }
+    """
     with open(file_addr) as f:
         datasheet_attr = json.loads(f.read().replace("    ", ""))
 
@@ -117,8 +120,6 @@ def extract_name_by_sid(file_addr):
     return name_by_sid
 
 if __name__ == '__main__':
-    # create_data_list()
-
     students_by_project = extract_data("data_list.json")
     students_by_sid = students_by_project_to_students_by_sid(students_by_project)
     name_by_sid = extract_name_by_sid("list.json")

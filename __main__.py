@@ -6,10 +6,15 @@ import json
 from sys import stderr
 from collections import defaultdict
 from matplotlib import pyplot as plt
+from numpy import random
 
 sid_mask = ["81", "01", "95", "000"]
 datasheets_addr_prefix = "data/"
 levels = ["level2", "level1"]
+
+def get_random_color():
+    color_array = ["00BFFF", "B22222", "FF1493", "800080", "000080", "ADFF2F", "228B22", "C0C0C0", "556B2F", "FF4500", "FFFF00"]
+    return "#" + color_array[int(random.randint(len(color_array)))]
 
 def normalize_sid(arg):
     sid_prefix_mask = "".join(sid_mask)
@@ -135,9 +140,23 @@ def visualize_scores_by_project(students_by_project):
     ax.set_xticklabels(list(avg_score_by_project.keys()))
     ax.set_ylabel("original score")
     ax.set_title("Scores by Project")
-    ax.bar(range(len(avg_score_by_project)), avg_score_by_project.values())
+    ax.bar(range(len(avg_score_by_project)), avg_score_by_project.values(), color = get_random_color())
     for i in range(len(avg_score_by_project)):
         ax.text(i - 0.3, list(avg_score_by_project.values())[i] + 2, "%.3f" % list(avg_score_by_project.values())[i])
+
+def visualize_number_of_students_by_project(students_by_project):
+    number_of_students = dict((project, sum([len(students_by_project[project][level]) for level in levels])) for project in students_by_project)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.axis([-1, len(number_of_students), 0, max(list(number_of_students.values())) + 2])
+    ax.set_xticks(range(len(number_of_students)))
+    ax.set_xticklabels(list(number_of_students.keys()))
+    ax.set_ylabel("students")
+    ax.set_title("Number of Students by Project")
+    ax.bar(range(len(number_of_students)), number_of_students.values(), color = get_random_color())
+    for i in range(len(number_of_students)):
+        ax.text(i - 0.1, list(number_of_students.values())[i] + 0.5, list(number_of_students.values())[i])
 
 if __name__ == '__main__':
     students_by_project = extract_data("data_list.json")
@@ -145,5 +164,6 @@ if __name__ == '__main__':
     name_by_sid = extract_name_by_sid("list.json")
 
     visualize_scores_by_project(students_by_project)
+    visualize_number_of_students_by_project(students_by_project)
 
     plt.show()

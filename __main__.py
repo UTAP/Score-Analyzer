@@ -13,7 +13,7 @@ datasheets_addr_prefix = "data/"
 levels = ["level2", "level1"]
 
 def get_random_color():
-    color_array = ["00BFFF", "B22222", "FF1493", "800080", "000080", "ADFF2F", "228B22", "C0C0C0", "556B2F", "FF4500", "FFFF00"]
+    color_array = ["Maroon", "Olive", "Green", "Teal", "Navy", "Blue", "Purple", "Orange", "Purple", "DarkBlue", "Brown"]
     return "#" + color_array[int(random.randint(len(color_array)))]
 
 def normalize_sid(arg):

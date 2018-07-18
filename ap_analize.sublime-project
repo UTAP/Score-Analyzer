@@ -3,7 +3,6 @@
 	[
 		{
 			"path": ".",
-            "name": "Twitter Followings Clusetering",
             "folder_exclude_patterns": [".env", ".git"]
 		}
 	],
